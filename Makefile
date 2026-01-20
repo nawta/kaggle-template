@@ -23,6 +23,3 @@ uv-setup:
 
 uv-jupyter:
 	uv run jupyter lab --port=8889
-
-uv-run:
-	uv run python $(SCRIPT)

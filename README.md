@@ -49,7 +49,7 @@ make uv-setup
 make uv-jupyter
 
 # スクリプトを実行する場合
-make uv-run SCRIPT=experiments/exp000_sample/run.py
+uv run python -m experiments.exp000_sample.run exp=001
 ```
 
 ### Docker による環境構築
@@ -70,8 +70,10 @@ make jupyter
 ## スクリプトの実行方法
 
 ```sh
-# python experiments/{major_version_name}/run.py exp={minor_version_name}
+# python -m experiments.{major_version_name}.run exp={minor_version_name}
 
-python experiments/exp000_sample/run.py
-python experiments/exp000_sample/run.py exp=001
+python -m experiments.exp000_sample.run
+python -m experiments.exp000_sample.run exp=001
 ```
+
+※ `python -m` を使用することで、カレントディレクトリがPythonパスに追加され、`utils` モジュールを正しくインポートできます。

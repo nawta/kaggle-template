@@ -27,7 +27,7 @@ class ExpConfig:
     seed: int = 7
     learning_rate: float = 0.001
     batch_size: int = 32
-    folds: list = field(default_factory=lambda: [0, 1, 2, 3, 4])
+    folds: list[int] = field(default_factory=lambda: [0, 1, 2, 3, 4])
 
 
 @dataclass
