@@ -2,13 +2,14 @@ import math
 import os
 import sys
 import time
+from collections.abc import Generator
 from contextlib import contextmanager
 
 import psutil
 
 
 @contextmanager
-def trace(title):
+def trace(title: str) -> Generator[None, None, None]:
     """
     Examples:
         >>> with trace("wait"):
@@ -29,7 +30,7 @@ def trace(title):
 
 
 @contextmanager
-def timer(name):
+def timer(name: str) -> Generator[None, None, None]:
     """
     Examples:
         >>> with timer("wait"):

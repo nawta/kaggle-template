@@ -23,17 +23,36 @@
 ├── output
 ├── tools
 ├── utils
+├── .python-version
 ├── Dockerfile
 ├── Dockerfile.cpu
 ├── LICENSE
 ├── Makefile
 ├── README.md
 ├── compose.cpu.yaml
-└── compose.yaml
+├── compose.yaml
+└── pyproject.toml
 
 ```
 
-## Docker による環境構築
+## 環境構築
+
+環境構築には uv と Docker の2つの方法があります。ローカルで手軽に開発したい場合は uv、Kaggle環境と同一の環境で実行したい場合は Docker を使用してください。
+
+### uv による環境構築
+
+```sh
+# セットアップ
+make uv-setup
+
+# jupyter lab を起動する場合
+make uv-jupyter
+
+# スクリプトを実行する場合
+uv run python -m experiments.exp000_sample.run exp=001
+```
+
+### Docker による環境構築
 
 ```sh
 # imageのbuild
@@ -51,8 +70,10 @@ make jupyter
 ## スクリプトの実行方法
 
 ```sh
-# python experiments/{major_version_name}/run.py exp={minor_version_name}
+# python -m experiments.{major_version_name}.run exp={minor_version_name}
 
-python experiments/exp000_sample/run.py
-python experiments/exp000_sample/run.py exp=001
+python -m experiments.exp000_sample.run
+python -m experiments.exp000_sample.run exp=001
 ```
+
+※ `python -m` を使用することで、カレントディレクトリがPythonパスに追加され、`utils` モジュールを正しくインポートできます。

@@ -6,6 +6,13 @@
 /wandb
 /.netrc
 
+# uv
+.venv/
+uv.lock
+
+# tmp directory (created by tools/upload_model.py)
+/tmp/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

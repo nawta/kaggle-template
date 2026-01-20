@@ -2,4 +2,4 @@
 FROM gcr.io/kaggle-gpu-images/python:v160
 
 RUN pip install --no-cache-dir \
-    hydra-core 
+    "hydra-core>=1.3"

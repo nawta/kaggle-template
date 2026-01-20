@@ -33,34 +33,35 @@ def copy_files_with_exts(source_dir: Path, dest_dir: Path, exts: list):
 @click.option("--title", "-t", default="kami-model")
 @click.option("--dir", "-d", type=Path, default="./output/experiments")
 @click.option(
-    "--extentions",
+    "--extensions",
     "-e",
-    type=list[str],
+    multiple=True,
     default=["best_model.pt", ".hydra/*.yaml"],
+    help="File extensions to upload (can be specified multiple times)",
 )
 @click.option("--user_name", "-u", default="kami634")
 @click.option("--new", "-n", is_flag=True)
 def main(
     title: str,
     dir: Path,
-    extentions: list[str] = [".pth", ".yaml"],
-    user_name: str = "kami634",
-    new: bool = False,
+    extensions: tuple[str, ...],
+    user_name: str,
+    new: bool,
 ):
-    """extentionを指定して、dir以下のファイルをzipに圧縮し、kaggleにアップロードする。
+    """extensionsを指定して、dir以下のファイルをzipに圧縮し、kaggleにアップロードする。
 
     Args:
         title (str): kaggleにアップロードするときのタイトル
         dir (Path): アップロードするファイルがあるディレクトリ
-        extentions (list[str], optional): アップロードするファイルの拡張子.
-        user_name (str, optional): kaggleのユーザー名.
-        new (bool, optional): 新規データセットとしてアップロードするかどうか.
+        extensions (tuple[str, ...]): アップロードするファイルの拡張子.
+        user_name (str): kaggleのユーザー名.
+        new (bool): 新規データセットとしてアップロードするかどうか.
     """
     tmp_dir = Path("./tmp")
     tmp_dir.mkdir(parents=True, exist_ok=True)
 
-    # 拡張子が.pthのファイルをコピー
-    copy_files_with_exts(dir, tmp_dir, extentions)
+    # 指定された拡張子のファイルをコピー
+    copy_files_with_exts(dir, tmp_dir, list(extensions))
 
     # dataset-metadata.jsonを作成
     dataset_metadata: dict[str, Any] = {}
