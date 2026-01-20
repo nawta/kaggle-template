@@ -23,17 +23,36 @@
 ├── output
 ├── tools
 ├── utils
+├── .python-version
 ├── Dockerfile
 ├── Dockerfile.cpu
 ├── LICENSE
 ├── Makefile
 ├── README.md
 ├── compose.cpu.yaml
-└── compose.yaml
+├── compose.yaml
+└── pyproject.toml
 
 ```
 
-## Docker による環境構築
+## 環境構築
+
+環境構築には uv と Docker の2つの方法があります。ローカルで手軽に開発したい場合は uv、Kaggle環境と同一の環境で実行したい場合は Docker を使用してください。
+
+### uv による環境構築
+
+```sh
+# セットアップ
+make uv-setup
+
+# jupyter lab を起動する場合
+make uv-jupyter
+
+# スクリプトを実行する場合
+make uv-run SCRIPT=experiments/exp000_sample/run.py
+```
+
+### Docker による環境構築
 
 ```sh
 # imageのbuild

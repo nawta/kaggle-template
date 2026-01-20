@@ -1,6 +1,6 @@
 CPU_FLAG :=
 ifneq ($(CPU),)
-    CPU_FLAG := -f compose.CPU.yaml
+    CPU_FLAG := -f compose.cpu.yaml
 endif
 
 default: build
@@ -16,3 +16,13 @@ jupyter:
 
 down:
 	docker compose $(CPU_FLAG) down
+
+# === uv環境用コマンド ===
+uv-setup:
+	uv sync --group dev
+
+uv-jupyter:
+	uv run jupyter lab --port=8889
+
+uv-run:
+	uv run python $(SCRIPT)
