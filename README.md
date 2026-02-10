@@ -1,50 +1,16 @@
 # MLコンペ用実験テンプレート
 
+Claude Code との協働を前提とした Kaggle コンペティション用テンプレート。
+
 ## 特徴
-- Docker によるポータブルなKaggleと同一の環境
-- Hydra による実験管理
-- 実験用スクリプトファイルを major バージョンごとにフォルダごとに管理 & 実験パラメータ設定を minor バージョンとしてファイルとして管理
-   - 実験用スクリプトと実験パラメータ設定を同一フォルダで局所的に管理して把握しやすくする
-- dataclass を用いた config 定義を用いることで、エディタの補完機能を利用できるように
 
-### Hydra による Config 管理
-- Config は yamlとdictで定義するのではなく、dataclass を用いて定義することで、エディタの補完などの機能を使いつつタイポを防止できるようにする
-- 各スクリプトに共通する環境依存となる設定は utils/env.py の EnvConfig で定義される
-- 各スクリプトによって変わる設定は、実行スクリプトのあるフォルダ(`{major_exp_name}`)の中に `exp/{minor_exp_name}.yaml` として配置することで管理。
-    - 実行時に `exp={minor_exp_name}` で上書きする
-    - `{major_exp_name}` と `{minor_exp_name}` の組み合わせで実験が再現できるようにする
-
-## Structure
-```text
-.
-├── competition/        # コンペ情報（EDA結果、類似コンペ調査）
-├── survey/             # 調査蓄積（論文、ディスカッション）
-│   ├── papers/         #   論文調査
-│   └── discussion/     #   ディスカッション定点観測
-├── docs/               # ドキュメント（実験記録・知見集約）
-├── experiments/        # 実験スクリプト
-│   ├── exp{NNN}_*/     #   人間用実験
-│   └── exp{A-Z}{NN}_*/ #   Claude用実験
-├── input/              # 入力データ
-├── logs/               # 開発ログ
-├── notebooks/          # Jupyter notebooks
-├── output/             # 実験出力
-├── tests/              # テストコード
-├── tools/              # ユーティリティツール
-├── utils/              # 共通ユーティリティ
-├── .python-version
-├── CLAUDE.md           # Claude Code 開発ガイドライン
-├── KAGGLE_DIRECTION.md # コンペ固有ワークフロー
-├── Dockerfile
-├── Dockerfile.cpu
-├── LICENSE
-├── Makefile
-├── README.md
-├── TODO.md             # タスク管理
-├── compose.cpu.yaml
-├── compose.yaml
-└── pyproject.toml
-```
+- **Docker** によるポータブルな Kaggle と同一の環境
+- **Hydra** による実験管理（dataclass ベースで補完・型チェック対応）
+- **実験の分離管理**: 人間用 (`exp{NNN}_`) と Claude 用 (`exp{A-Z}{NN}_`) の命名規則
+- **SESSION_NOTES.md** によるセッション間の知識継続
+- **知見集約** (`docs/experiments.md`): 実験結果・ベストスコア・有効テクニックを一元管理
+- **調査の体系化**: `survey/` (論文・ディスカッション) と `competition/` (EDA・類似コンペ) の分離
+- **wandb** による実験ログの記録
 
 ## Quickstart: 新しいコンペを始める
 
@@ -55,6 +21,59 @@
 5. EDA を実施し `competition/overview.md` にまとめる
 6. `survey/` で論文・ディスカッション調査
 7. 最初のベースライン実験を作成
+
+## Structure
+
+```text
+.
+├── competition/              # コンペ情報
+│   ├── overview.md           #   EDA結果・データ概要
+│   └── related_competitions.md #   類似コンペの知見
+│
+├── survey/                   # 調査蓄積
+│   ├── papers/               #   論文調査
+│   └── discussion/           #   ディスカッション定点観測
+│
+├── experiments/              # 実験スクリプト
+│   ├── exp{NNN}_{名前}/      #   人間用実験（例: exp001_baseline）
+│   └── exp{A-Z}{NN}_{名前}/  #   Claude用実験（例: expA00_baseline）
+│
+├── docs/
+│   └── experiments.md        # 実験記録 & 知見集約
+│
+├── input/                    # 入力データ
+├── output/                   # 実験出力
+├── logs/                     # 開発ログ
+├── notebooks/                # Jupyter notebooks
+├── tests/                    # テストコード
+├── tools/                    # ユーティリティツール（提出確認、モデルアップロード）
+├── utils/                    # 共通ユーティリティ（env, logger, timing）
+│
+├── CLAUDE.md                 # Claude Code 開発ガイドライン
+├── KAGGLE_DIRECTION.md       # コンペ固有ワークフロー
+├── TODO.md                   # タスク管理
+├── Makefile
+├── pyproject.toml
+├── Dockerfile / Dockerfile.cpu
+└── compose.yaml / compose.cpu.yaml
+```
+
+## 実験フォルダ命名規則
+
+| 所有者 | パターン | 例 | 説明 |
+|--------|---------|-----|------|
+| 人間 | `exp{NNN}_{名前}` | `exp001_baseline` | NNN: 3桁の連番 |
+| Claude | `exp{A-Z}{NN}_{名前}` | `expA00_baseline` | アルファベットは方針変更時にインクリメント |
+
+各実験フォルダには `SESSION_NOTES.md` を必ず配置し、セッション間の知識継続に使用する。
+
+## Hydra による Config 管理
+
+- Config は dataclass で定義（エディタ補完・タイポ防止）
+- 共通設定: `utils/env.py` の `EnvConfig`
+- 実験固有設定: `experiments/{実験名}/exp/{minor}.yaml`
+- 実行時に `exp={minor_version}` でオーバーライド
+- `{major_exp_name}` と `{minor_exp_name}` の組み合わせで実験を再現
 
 ## プロジェクト初期設定
 
@@ -106,3 +125,14 @@ python -m experiments.exp000_sample.run exp=001
 ```
 
 ※ `python -m` を使用することで、カレントディレクトリがPythonパスに追加され、`utils` モジュールを正しくインポートできます。
+
+## 関連ドキュメント
+
+| ファイル | 内容 |
+|---------|------|
+| `CLAUDE.md` | Claude Code 開発ガイドライン（標準ルール、禁止事項） |
+| `KAGGLE_DIRECTION.md` | コンペ固有ワークフロー（命名規則、進行方法、SESSION_NOTES仕様） |
+| `docs/experiments.md` | 実験記録 & 知見集約 |
+| `competition/overview.md` | EDA・データ概要テンプレート |
+| `survey/papers/README.md` | 論文調査ガイド |
+| `survey/discussion/README.md` | ディスカッション定点観測ガイド |
