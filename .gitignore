@@ -1,3 +1,15 @@
+# ML model files
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.npy
+*.npz
+*.onnx
+
+# Survey data
+/survey/discussion/*.json
+
 /.virtual_documents
 /.jupyter
 /.ipython
