@@ -123,3 +123,17 @@ kaggle-template/
 
 - `competition/overview.md`: EDA 結果のまとめ。コンペ開始時に記入。
 - `competition/related_competitions.md`: 類似コンペの調査結果。ベースライン構築前に記入。
+
+## Codex MCP サーバーの活用
+
+Codex MCP サーバー（`mcp__codex__codex`）を以下の場面で積極的に活用する。
+
+### サーベイ時の活用
+- 論文調査（`survey/papers/`）や類似コンペ調査（`competition/related_competitions.md`）を行う際、Codex を使って情報収集・要約を行う
+- Kaggle Discussion の調査時にも Codex を活用し、効率的に知見を収集する
+- 調査フェーズ全般で Codex のネット検索・分析能力を活かす
+
+### コードレビュー時の活用
+- 実験コードの実装後、Codex を使ってコードレビューを実施する
+- レビュー観点: バグの有無、パフォーマンス改善点、可読性、ベストプラクティスとの整合性
+- 重要な変更（モデルアーキテクチャ変更、学習パイプライン変更など）は特に Codex レビューを推奨
