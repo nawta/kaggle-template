@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:zenn.dev)",
+      "WebFetch(domain:github.com)",
+      "Bash(git -C /home/naoto/workspace/Kaggle/xxxx_kaggle_starterRepository log --oneline)",
+      "Bash(git -C /home/naoto/workspace/Kaggle/xxxx_kaggle_starterRepository config -l)",
+      "Bash(git -C /home/naoto/workspace/Kaggle/xxxx_kaggle_starterRepository remote -v)",
+      "Bash(git -C /home/naoto/workspace/Kaggle/kaggle-template log --oneline -20)",
+      "Bash(git -C /home/naoto/workspace/Kaggle/kaggle-template log --oneline)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nREADME.mdを全面的にリライト: 新機能の反映と構成改善\n\n- 冒頭にテンプレートの概要説明を追加\n- 特徴一覧を新機能（SESSION_NOTES, 命名規則, 知見集約, survey/competition）反映に更新\n- Quickstartを上部に移動\n- ディレクトリ構造図を論理グループ別に整理\n- 実験フォルダ命名規則のテーブルを追加\n- Hydra Config管理セクションを簡潔化\n- 関連ドキュメント一覧テーブルを追加\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(codex mcp-server:*)",
+      "Bash(codex mcp:*)",
+      "Bash(codex:*)",
+      "Bash(claude mcp:*)",
+      "Bash(claude plugin:*)",
+      "Bash(claude:*)",
+      "Bash(bash .claude/skills/review4/scripts/review4.sh *)",
+      "Bash(git commit:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "codex"
+  ]
+}
