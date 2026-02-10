@@ -15,7 +15,7 @@ from utils.logger import get_logger
 from utils.timing import trace
 
 LOGGER = None
-WANDB_PROJECT_NAME = "kaggle-template"
+WANDB_PROJECT_NAME = "kaggle-template"  # TODO: プロジェクト名に変更してください
 
 
 ####################

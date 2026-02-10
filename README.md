@@ -17,23 +17,35 @@
 ## Structure
 ```text
 .
-├── experiments
-├── input
-├── notebook
-├── output
-├── tools
-├── utils
+├── docs                # ドキュメント（実験記録など）
+├── experiments         # 実験スクリプト
+├── input               # 入力データ
+├── logs                # 開発ログ
+├── notebooks           # Jupyter notebooks
+├── output              # 実験出力
+├── tests               # テストコード
+├── tools               # ユーティリティツール
+├── utils               # 共通ユーティリティ
 ├── .python-version
+├── CLAUDE.md           # Claude Code 開発ガイドライン
 ├── Dockerfile
 ├── Dockerfile.cpu
 ├── LICENSE
 ├── Makefile
 ├── README.md
+├── TODO.md             # タスク管理
 ├── compose.cpu.yaml
 ├── compose.yaml
 └── pyproject.toml
 
 ```
+
+## プロジェクト初期設定
+
+このテンプレートを新しいコンペで使用する際に、以下の項目を変更してください。
+
+- [ ] `pyproject.toml` の `name` をプロジェクト名に変更
+- [ ] `experiments/exp000_sample/run.py` の `WANDB_PROJECT_NAME` をプロジェクト名に変更
 
 ## 環境構築
 

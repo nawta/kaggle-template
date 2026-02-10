@@ -39,7 +39,7 @@ def copy_files_with_exts(source_dir: Path, dest_dir: Path, exts: list):
     default=["best_model.pt", ".hydra/*.yaml"],
     help="File extensions to upload (can be specified multiple times)",
 )
-@click.option("--user_name", "-u", default="kami634")
+@click.option("--user_name", "-u", default="naotonishida")
 @click.option("--new", "-n", is_flag=True)
 def main(
     title: str,
