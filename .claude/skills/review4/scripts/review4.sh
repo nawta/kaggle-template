@@ -16,6 +16,9 @@ CLAUDE_MODEL_2="${CLAUDE_MODEL_2:-claude-opus-4-5-20251101}"
 CODEX_MODEL_1="${CODEX_MODEL_1:-gpt-5.3-codex}"
 CODEX_MODEL_2="${CODEX_MODEL_2:-gpt-5.2-codex}"
 
+CODEX_TIMEOUT="${CODEX_TIMEOUT:-3600}"  # 1時間 (秒)
+CODEX_MAX_RETRIES="${CODEX_MAX_RETRIES:-3}"
+
 SCOPE="${1:-staged}"
 
 # --- 一時ディレクトリ ---
@@ -120,15 +123,54 @@ run_codex() {
   local model="$1"
   local out="$2"
   local label="$3"
-  echo "=== [review4] Starting $label ($model) ===" >&2
-  { echo "$PROMPT"; echo; cat "$CONTEXT_FILE"; } | codex exec \
-    -m "$model" \
-    -s read-only \
-    - >"$out" 2>/dev/null || {
-      echo "=== [review4] $label failed (exit=$?) ===" >&2
-      echo "_${label} failed to produce output._" > "$out"
-    }
-  echo "=== [review4] $label completed ===" >&2
+  local attempt=1
+
+  while [ "$attempt" -le "$CODEX_MAX_RETRIES" ]; do
+    echo "=== [review4] Starting $label ($model) [attempt $attempt/$CODEX_MAX_RETRIES] ===" >&2
+
+    # バックグラウンドで codex を実行し、タイムアウトを監視
+    { echo "$PROMPT"; echo; cat "$CONTEXT_FILE"; } | codex exec \
+      -m "$model" \
+      -s read-only \
+      - >"$out" 2>/dev/null &
+    local codex_pid=$!
+
+    # タイムアウト監視: CODEX_TIMEOUT 秒ごとにチェック
+    local elapsed=0
+    while kill -0 "$codex_pid" 2>/dev/null; do
+      sleep 10
+      elapsed=$((elapsed + 10))
+      if [ "$elapsed" -ge "$CODEX_TIMEOUT" ]; then
+        echo "=== [review4] $label timed out after ${CODEX_TIMEOUT}s (attempt $attempt/$CODEX_MAX_RETRIES) ===" >&2
+        kill "$codex_pid" 2>/dev/null || true
+        wait "$codex_pid" 2>/dev/null || true
+        break
+      fi
+    done
+
+    # プロセスがまだ動いていなければ正常終了を確認
+    if ! kill -0 "$codex_pid" 2>/dev/null; then
+      wait "$codex_pid" 2>/dev/null
+      local exit_code=$?
+      # 出力が空でなく、正常終了なら成功
+      if [ "$exit_code" -eq 0 ] && [ -s "$out" ]; then
+        echo "=== [review4] $label completed (attempt $attempt) ===" >&2
+        return 0
+      fi
+      # タイムアウトではなく即座に失敗した場合
+      if [ "$elapsed" -lt "$CODEX_TIMEOUT" ]; then
+        echo "=== [review4] $label failed (exit=$exit_code, attempt $attempt/$CODEX_MAX_RETRIES) ===" >&2
+      fi
+    fi
+
+    attempt=$((attempt + 1))
+    if [ "$attempt" -le "$CODEX_MAX_RETRIES" ]; then
+      echo "=== [review4] Retrying $label... ===" >&2
+    fi
+  done
+
+  echo "=== [review4] $label failed after $CODEX_MAX_RETRIES attempts ===" >&2
+  echo "_${label} failed to produce output after ${CODEX_MAX_RETRIES} attempts._" > "$out"
 }
 
 # --- 4モデル並列実行 ---
