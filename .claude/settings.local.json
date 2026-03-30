@@ -19,7 +19,13 @@
       "Bash(claude plugin:*)",
       "Bash(claude:*)",
       "Bash(bash .claude/skills/review4/scripts/review4.sh *)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(du:*)",
+      "Bash(huggingface-cli whoami:*)",
+      "Bash(huggingface-cli repo create:*)",
+      "Bash(huggingface-cli upload:*)",
+      "Bash(do:*)",
+      "Bash(huggingface-cli repo:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

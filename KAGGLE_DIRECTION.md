@@ -89,7 +89,7 @@ kaggle-template/
 ### 2. 調査フェーズ
 1. 類似コンペの上位解法を調査 → `competition/related_competitions.md`
 2. 関連論文を調査 → `survey/papers/`
-3. Kaggle Discussion を定期的に確認 → `survey/discussion/`
+3. Kaggle Discussion を定期的に確認 → `survey/discussion/`. `/kaggle-discussion-survey`スキルを利用（survey/discussion/README.mdに利用法は記載）
 
 ### 3. ベースライン構築
 1. 最初の実験フォルダを作成（例: `exp001_baseline` or `expA00_baseline`）
