@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# review4.sh - 4モデル並列コードレビュースクリプト
+# review4.sh - 5モデル並列コードレビュースクリプト (Claude x2 + Codex x2 + CodeRabbit)
 # 設計ドキュメント: .claude/skills/review4/SKILL.md
 # 関連ファイル: .claude/skills/review4/SKILL.md, .claude/settings.local.json
 #
@@ -19,6 +19,7 @@ CODEX_MODEL_2="${CODEX_MODEL_2:-gpt-5.4}"
 
 CODEX_TIMEOUT="${CODEX_TIMEOUT:-3600}"  # 1時間 (秒)
 CODEX_MAX_RETRIES="${CODEX_MAX_RETRIES:-3}"
+CODERABBIT_TIMEOUT="${CODERABBIT_TIMEOUT:-1800}"  # 30分 (秒)
 
 SCOPE="${1:-staged}"
 
@@ -31,6 +32,7 @@ OUT_CLAUDE1="$TMPDIR_REVIEW/claude1.md"
 OUT_CLAUDE2="$TMPDIR_REVIEW/claude2.md"
 OUT_CODEX1="$TMPDIR_REVIEW/codex1.md"
 OUT_CODEX2="$TMPDIR_REVIEW/codex2.md"
+OUT_CR="$TMPDIR_REVIEW/coderabbit.md"
 
 # --- git diff 収集 ---
 echo "=== [review4] Collecting git diff (scope: $SCOPE) ===" >&2
@@ -155,6 +157,31 @@ run_claude() {
   echo "=== [review4] $label completed ===" >&2
 }
 
+run_coderabbit() {
+  local out="$1"
+  local label="CodeRabbit"
+  echo "=== [review4] Starting $label ===" >&2
+
+  if ! command -v cr >/dev/null 2>&1; then
+    echo "=== [review4] $label skipped: cr command not found ===" >&2
+    echo "_${label} skipped: \`cr\` CLI not installed (\`curl -fsSL https://cli.coderabbit.ai/install.sh | sh\`)._" > "$out"
+    return
+  fi
+
+  local cr_args=(--plain)
+  case "$EFFECTIVE_SCOPE" in
+    last-commit) cr_args=(--base HEAD~1 --plain) ;;
+  esac
+
+  if timeout "$CODERABBIT_TIMEOUT" cr "${cr_args[@]}" > "$out" 2>/dev/null; then
+    echo "=== [review4] $label completed ===" >&2
+  else
+    local exit_code=$?
+    echo "=== [review4] $label failed (exit=$exit_code) ===" >&2
+    echo "_${label} failed (exit=$exit_code). Auth required? Run \`cr auth login\`._" > "$out"
+  fi
+}
+
 run_codex() {
   local model="$1"
   local out="$2"
@@ -209,8 +236,8 @@ run_codex() {
   echo "_${label} failed to produce output after ${CODEX_MAX_RETRIES} attempts._" > "$out"
 }
 
-# --- 4モデル並列実行 ---
-echo "=== [review4] Launching 4 models in parallel ===" >&2
+# --- 5レビュアー並列実行 ---
+echo "=== [review4] Launching 5 reviewers in parallel ===" >&2
 
 run_claude "$CLAUDE_MODEL_1" "$OUT_CLAUDE1" "Claude-1(${CLAUDE_MODEL_1})" &
 PID_C1=$!
@@ -224,16 +251,19 @@ PID_CX1=$!
 run_codex "$CODEX_MODEL_2" "$OUT_CODEX2" "Codex-2(${CODEX_MODEL_2})" &
 PID_CX2=$!
 
-echo "=== [review4] Waiting for all models (PIDs: $PID_C1 $PID_C2 $PID_CX1 $PID_CX2) ===" >&2
-wait $PID_C1 $PID_C2 $PID_CX1 $PID_CX2
-echo "=== [review4] All models completed ===" >&2
+run_coderabbit "$OUT_CR" &
+PID_CR=$!
+
+echo "=== [review4] Waiting for all reviewers (PIDs: $PID_C1 $PID_C2 $PID_CX1 $PID_CX2 $PID_CR) ===" >&2
+wait $PID_C1 $PID_C2 $PID_CX1 $PID_CX2 $PID_CR
+echo "=== [review4] All reviewers completed ===" >&2
 
 # --- 結果統合出力 ---
 cat <<EOF
-# Code Review Results (4-Model Parallel Review)
+# Code Review Results (5-Reviewer Parallel Review)
 
 **Scope**: ${SCOPE}
-**Models**: ${CLAUDE_MODEL_1}, ${CLAUDE_MODEL_2}, ${CODEX_MODEL_1}, ${CODEX_MODEL_2}
+**Reviewers**: ${CLAUDE_MODEL_1}, ${CLAUDE_MODEL_2}, ${CODEX_MODEL_1}, ${CODEX_MODEL_2}, CodeRabbit
 
 ---
 
@@ -258,6 +288,12 @@ $(cat "$OUT_CODEX1")
 ## Review by ${CODEX_MODEL_2}
 
 $(cat "$OUT_CODEX2")
+
+---
+
+## Review by CodeRabbit
+
+$(cat "$OUT_CR")
 
 ---
 
