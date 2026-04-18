@@ -1,7 +1,11 @@
 ---
 name: review4
-description: Opus 4.7/4.6 + Codex 5.3-codex/5.4 + CodeRabbit を並列実行し、Deepwiki MCP で外部リポジトリ文脈を補完してコードレビューを統合する
-disable-model-invocation: true
+description: |
+  Opus 4.7/4.6 + Codex 5.3-codex/5.4 + CodeRabbit を並列実行し、Deepwiki MCP で外部リポジトリ文脈を補完してコードレビューを統合する。
+
+  TRIGGER when: ユーザーがコードレビューを依頼したとき。例: "レビューして", "review", "コードレビューお願い",
+  "この変更チェックして", "PRをレビュー", "diff見て指摘して", "/review4"。
+  staged / unstaged / all / last-commit のスコープが明示された場合も含む。
 allowed-tools: Bash(bash ~/.claude/skills/review4/scripts/review4.sh *), Read, mcp__deepwiki__read_wiki_structure, mcp__deepwiki__read_wiki_contents, mcp__deepwiki__ask_question
 ---
 
