@@ -21,10 +21,10 @@ Claude Code のチャットで以下のように入力します:
 
 | ラベル | デフォルトモデル | 環境変数 |
 |--------|-----------------|----------|
-| Claude-1 | `claude-opus-4-6` | `CLAUDE_MODEL_1` |
-| Claude-2 | `claude-opus-4-5-20251101` | `CLAUDE_MODEL_2` |
+| Claude-1 | `claude-opus-4-7` | `CLAUDE_MODEL_1` |
+| Claude-2 | `claude-opus-4-6` | `CLAUDE_MODEL_2` |
 | Codex-1 | `gpt-5.3-codex` | `CODEX_MODEL_1` |
-| Codex-2 | `gpt-5.2-codex` | `CODEX_MODEL_2` |
+| Codex-2 | `gpt-5.4` | `CODEX_MODEL_2` |
 
 モデルを変更したい場合は、環境変数を設定してから Claude Code を起動してください:
 
@@ -51,7 +51,7 @@ export CLAUDE_MODEL_1="claude-sonnet-4-5-20250929"
 - **Good** - 良い点
 - **モデル間の見解の相違** - モデル間で矛盾がある場合
 
-各指摘には `[Opus4.6]` `[Opus4.5]` `[Codex5.3]` `[Codex5.2]` のタグが付きます。
+各指摘には `[Opus4.7]` `[Opus4.6]` `[Codex5.3]` `[Codex5.4]` のタグが付きます。
 
 ## レビュー観点
 

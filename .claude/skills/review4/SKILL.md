@@ -1,6 +1,6 @@
 ---
 name: review4
-description: Opus 4.6/4.5 + Codex 5.3/5.4s を並列実行してコードレビューを統合する
+description: Opus 4.7/4.6 + Codex 5.3-codex/5.4 を並列実行してコードレビューを統合する
 disable-model-invocation: true
 allowed-tools: Bash(bash .claude/skills/review4/scripts/review4.sh *), Read
 ---
@@ -53,4 +53,4 @@ bash .claude/skills/review4/scripts/review4.sh $ARGUMENTS
 - **1モデルのみの指摘** → 内容を精査し、妥当なら残す
 - **モデル間で矛盾する指摘** → 両方の見解を「見解の相違」セクションに記載
 - **具体的な修正案がある場合** → コードブロックで提示
-- 各指摘にはどのモデルが指摘したかを `[Opus4.6]` `[Opus4.5]` `[Codex5.3]` `[Codex5.4]` のタグで示す
+- 各指摘にはどのモデルが指摘したかを `[Opus4.7]` `[Opus4.6]` `[Codex5.3]` `[Codex5.4]` のタグで示す

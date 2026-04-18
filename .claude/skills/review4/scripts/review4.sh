@@ -11,8 +11,8 @@
 set -euo pipefail
 
 # --- 設定 ---
-CLAUDE_MODEL_1="${CLAUDE_MODEL_1:-claude-opus-4-6}"
-CLAUDE_MODEL_2="${CLAUDE_MODEL_2:-claude-opus-4-5-20251101}"
+CLAUDE_MODEL_1="${CLAUDE_MODEL_1:-claude-opus-4-7}"
+CLAUDE_MODEL_2="${CLAUDE_MODEL_2:-claude-opus-4-6}"
 CODEX_MODEL_1="${CODEX_MODEL_1:-gpt-5.3-codex}"
 CODEX_MODEL_2="${CODEX_MODEL_2:-gpt-5.4}"
 

@@ -25,7 +25,11 @@
       "Bash(huggingface-cli repo create:*)",
       "Bash(huggingface-cli upload:*)",
       "Bash(do:*)",
-      "Bash(huggingface-cli repo:*)"
+      "Bash(huggingface-cli repo:*)",
+      "Bash(mkdir -p /home/naoto/.claude/skills/review4/scripts)",
+      "Bash(cp /home/naoto/workspace/Kaggle/kaggle-template/.claude/skills/review4/scripts/review4.sh /home/naoto/.claude/skills/review4/scripts/review4.sh)",
+      "Bash(cp /home/naoto/workspace/Kaggle/kaggle-template/.claude/skills/review4/SKILL.md /home/naoto/.claude/skills/review4/SKILL.md)",
+      "Bash(chmod +x /home/naoto/.claude/skills/review4/scripts/review4.sh)"
     ]
   },
   "enableAllProjectMcpServers": true,
