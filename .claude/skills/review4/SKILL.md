@@ -16,9 +16,10 @@ bash .claude/skills/review4/scripts/review4.sh $ARGUMENTS
 ```
 
 引数の仕様:
-- 引数なし or `staged` → staged changes をレビュー（デフォルト）
+- 引数なし or `staged` → staged changes をレビュー（デフォルト）。空なら自動で `last-commit` にフォールバック
 - `unstaged` → unstaged changes をレビュー
-- `all` → staged + unstaged 両方をレビュー
+- `all` → staged + unstaged 両方をレビュー。両方空なら `last-commit` にフォールバック
+- `last-commit` → 直近コミット（HEAD）をレビュー
 
 2. コマンド出力（4モデルのレビュー結果）を受け取ったら、以下の手順で統合レビューを作成してください:
 

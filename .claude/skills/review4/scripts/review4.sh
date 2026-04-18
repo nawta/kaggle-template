@@ -3,10 +3,11 @@
 # 設計ドキュメント: .claude/skills/review4/SKILL.md
 # 関連ファイル: .claude/skills/review4/SKILL.md, .claude/settings.local.json
 #
-# Usage: bash review4.sh [staged|unstaged|all]
-#   staged   - staged changes のみ (default)
-#   unstaged - unstaged changes のみ
-#   all      - staged + unstaged 両方
+# Usage: bash review4.sh [staged|unstaged|all|last-commit]
+#   staged      - staged changes のみ (default). 空の場合は last-commit にフォールバック
+#   unstaged    - unstaged changes のみ
+#   all         - staged + unstaged 両方. 両方空の場合は last-commit にフォールバック
+#   last-commit - 直近コミット (HEAD) をレビュー
 
 set -euo pipefail
 
@@ -34,6 +35,32 @@ OUT_CODEX2="$TMPDIR_REVIEW/codex2.md"
 # --- git diff 収集 ---
 echo "=== [review4] Collecting git diff (scope: $SCOPE) ===" >&2
 
+case "$SCOPE" in
+  staged|unstaged|all|last-commit) ;;
+  *)
+    echo "Error: Unknown scope '$SCOPE'. Use staged|unstaged|all|last-commit" >&2
+    exit 1
+    ;;
+esac
+
+has_staged_diff()   { [ -n "$(git diff --cached --name-only 2>/dev/null)" ]; }
+has_unstaged_diff() { [ -n "$(git diff --name-only 2>/dev/null)" ]; }
+has_commit()        { git rev-parse --verify HEAD >/dev/null 2>&1; }
+
+# ステージング領域が空の場合は last-commit にフォールバック
+EFFECTIVE_SCOPE="$SCOPE"
+if [ "$SCOPE" = "staged" ] && ! has_staged_diff; then
+  if has_commit; then
+    echo "=== [review4] No staged changes. Falling back to last-commit. ===" >&2
+    EFFECTIVE_SCOPE="last-commit"
+  fi
+elif [ "$SCOPE" = "all" ] && ! has_staged_diff && ! has_unstaged_diff; then
+  if has_commit; then
+    echo "=== [review4] No staged/unstaged changes. Falling back to last-commit. ===" >&2
+    EFFECTIVE_SCOPE="last-commit"
+  fi
+fi
+
 {
   echo "# Git Status"
   echo '```'
@@ -41,7 +68,7 @@ echo "=== [review4] Collecting git diff (scope: $SCOPE) ===" >&2
   echo '```'
   echo
 
-  case "$SCOPE" in
+  case "$EFFECTIVE_SCOPE" in
     staged)
       echo "# Staged Changes (git diff --cached)"
       echo '```diff'
@@ -65,22 +92,31 @@ echo "=== [review4] Collecting git diff (scope: $SCOPE) ===" >&2
       git diff
       echo '```'
       ;;
-    *)
-      echo "Error: Unknown scope '$SCOPE'. Use staged|unstaged|all" >&2
-      exit 1
+    last-commit)
+      echo "# Last Commit ($(git log -1 --format='%h %s' 2>/dev/null))"
+      echo '```diff'
+      git log -1 -p --format=fuller
+      echo '```'
       ;;
   esac
 } > "$CONTEXT_FILE"
 
-# diff が空かチェック
-DIFF_SIZE=$(wc -c < "$CONTEXT_FILE")
-if [ "$DIFF_SIZE" -lt 50 ]; then
+# diff が空かチェック (実質的な内容があるか)
+case "$EFFECTIVE_SCOPE" in
+  staged)      has_content=$(has_staged_diff && echo 1 || echo 0) ;;
+  unstaged)    has_content=$(has_unstaged_diff && echo 1 || echo 0) ;;
+  all)         has_content=$( { has_staged_diff || has_unstaged_diff; } && echo 1 || echo 0) ;;
+  last-commit) has_content=$(has_commit && echo 1 || echo 0) ;;
+esac
+
+if [ "$has_content" = "0" ]; then
   echo "=== [review4] No changes detected. Nothing to review. ===" >&2
-  echo "No changes detected for scope: $SCOPE"
+  echo "No changes detected for scope: $SCOPE (effective: $EFFECTIVE_SCOPE)"
   exit 0
 fi
 
-echo "=== [review4] Context collected ($DIFF_SIZE bytes) ===" >&2
+DIFF_SIZE=$(wc -c < "$CONTEXT_FILE")
+echo "=== [review4] Context collected ($DIFF_SIZE bytes, effective scope: $EFFECTIVE_SCOPE) ===" >&2
 
 # --- レビュープロンプト ---
 read -r -d '' PROMPT <<'REVIEW_PROMPT' || true

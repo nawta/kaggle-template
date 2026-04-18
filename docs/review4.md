@@ -11,11 +11,16 @@
 Claude Code のチャットで以下のように入力します:
 
 ```
-/review4              # staged changes をレビュー（デフォルト）
-/review4 staged       # staged changes をレビュー
+/review4              # staged changes をレビュー（デフォルト, 空なら last-commit にフォールバック）
+/review4 staged       # staged changes をレビュー（空なら last-commit にフォールバック）
 /review4 unstaged     # unstaged changes をレビュー
-/review4 all          # staged + unstaged 両方をレビュー
+/review4 all          # staged + unstaged 両方をレビュー（両方空なら last-commit にフォールバック）
+/review4 last-commit  # 直近コミット（HEAD）をレビュー
 ```
+
+## フォールバック動作
+
+`staged`（デフォルト）または `all` スコープで対応する差分が空の場合、自動的に直近コミット（`git log -1 -p`）のレビューに切り替わります。コミット後すぐに `/review4` を実行しても空振りしないようになっています。
 
 ## 使用モデル
 

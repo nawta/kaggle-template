@@ -29,7 +29,12 @@
       "Bash(mkdir -p /home/naoto/.claude/skills/review4/scripts)",
       "Bash(cp /home/naoto/workspace/Kaggle/kaggle-template/.claude/skills/review4/scripts/review4.sh /home/naoto/.claude/skills/review4/scripts/review4.sh)",
       "Bash(cp /home/naoto/workspace/Kaggle/kaggle-template/.claude/skills/review4/SKILL.md /home/naoto/.claude/skills/review4/SKILL.md)",
-      "Bash(chmod +x /home/naoto/.claude/skills/review4/scripts/review4.sh)"
+      "Bash(chmod +x /home/naoto/.claude/skills/review4/scripts/review4.sh)",
+      "Bash(bash -n /home/naoto/workspace/Kaggle/kaggle-template/.claude/skills/review4/scripts/review4.sh)",
+      "Read(//tmp/**)",
+      "Bash(cat)",
+      "Bash(bash test_has.sh)",
+      "Bash(rm test_has.sh)"
     ]
   },
   "enableAllProjectMcpServers": true,
